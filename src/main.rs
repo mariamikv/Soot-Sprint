@@ -1,7 +1,15 @@
 use macroquad::prelude::*;
 
+#[derive(Clone, Copy)] // Add this so we can copy the value
+enum ObstacleType {
+    Object0,
+    Object1,
+    Object2,
+}
+
 struct Obstacle {
     rect: Rect,
+    kind: ObstacleType,
 }
 
 enum GameState {
@@ -14,10 +22,17 @@ async fn main() {
     let background_texture = load_texture("assets/background_mid.png").await.unwrap();
     let player_texture = load_texture("assets/first_jump.png").await.unwrap();
 
+    let obstacle_object0_texture = load_texture("assets/object_0.png").await.unwrap();
+    let obstacle_object1_texture = load_texture("assets/object_1.png").await.unwrap();
+    let obstacle_object2_texture = load_texture("assets/object_2.png").await.unwrap();
+
     const FLOOR_Y_POSITION: f32 = 400.0;
     const PLAYER_X_POSITION: f32 = 75.0;
     const GRAVITY: f32 = 1.0;
     const JUMP_FORCE: f32 = -25.0;
+
+    const OBSTACLE_WIDTH: f32 = 80.0;
+    const OBSTACLE_HEIGHT: f32 = 80.0;
 
     let mut player_y_position = 100.0;
     let mut player_velocity_y = 0.0;
@@ -48,11 +63,26 @@ async fn main() {
                     is_on_floor = false;
                 }
                 spawn_timer -= delta_time;
+
                 if spawn_timer <= 0.0 {
                     spawn_timer = rand::gen_range(1.5, 3.0);
-                    obstacles.push(Obstacle {
-                        rect: Rect::new(screen_width(), FLOOR_Y_POSITION - 80.0, 30.0, 80.0),
-                    });
+
+                    let random_kind_index = rand::gen_range(0, 3);
+                    let new_obstacle = match random_kind_index {
+                        0 => Obstacle {
+                            rect: Rect::new(screen_width(), FLOOR_Y_POSITION - OBSTACLE_HEIGHT, OBSTACLE_WIDTH, OBSTACLE_HEIGHT),
+                            kind: ObstacleType::Object0,
+                        },
+                        1 => Obstacle {
+                            rect: Rect::new(screen_width(), FLOOR_Y_POSITION - OBSTACLE_HEIGHT, OBSTACLE_WIDTH, OBSTACLE_HEIGHT),
+                            kind: ObstacleType::Object1,
+                        },
+                        _ => Obstacle {
+                            rect: Rect::new(screen_width(), FLOOR_Y_POSITION - OBSTACLE_HEIGHT, OBSTACLE_WIDTH, OBSTACLE_HEIGHT),
+                            kind: ObstacleType::Object2,
+                        }
+                    };
+                    obstacles.push(new_obstacle);
                 }
                 for obstacle in obstacles.iter_mut() {
                     obstacle.rect.x -= scroll_speed * delta_time;
@@ -130,7 +160,22 @@ async fn main() {
         );
 
         for obstacle in &obstacles {
-            draw_rectangle(obstacle.rect.x, obstacle.rect.y, obstacle.rect.w, obstacle.rect.h, BROWN);
+            let texture = match obstacle.kind {
+                ObstacleType::Object0 => &obstacle_object0_texture,
+                ObstacleType::Object1 => &obstacle_object1_texture,
+                ObstacleType::Object2 => &obstacle_object2_texture,
+            };
+
+            draw_texture_ex(
+                texture,
+                obstacle.rect.x,
+                obstacle.rect.y,
+                WHITE,
+                DrawTextureParams {
+                    dest_size: Some(Vec2::new(obstacle.rect.w, obstacle.rect.h)),
+                    ..Default::default()
+                },
+            );
         }
 
         draw_text("SOOT SPRINT", 20.0, 50.0, 50.0, DARKGRAY);
