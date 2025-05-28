@@ -12,6 +12,7 @@ enum GameState {
 #[macroquad::main("SootSprint")]
 async fn main() {
     let background_texture = load_texture("assets/background_mid.png").await.unwrap();
+    let player_texture = load_texture("assets/first_jump.png").await.unwrap();
 
     const FLOOR_Y_POSITION: f32 = 400.0;
     const PLAYER_X_POSITION: f32 = 75.0;
@@ -102,7 +103,31 @@ async fn main() {
         );
 
         draw_line(0.0, FLOOR_Y_POSITION, screen_width(), FLOOR_Y_POSITION, 5.0, BLACK);
-        draw_circle(PLAYER_X_POSITION, player_y_position - player_radius, player_radius, RED);
+        // --- NEW: Use draw_texture_ex to scale the player image ---
+        let desired_player_radius = player_radius; // The size our circle was
+        let texture_width = player_texture.width() as f32;
+        let texture_height = player_texture.height() as f32;
+
+        // Calculate the scale needed to make the image roughly the size of the circle
+        let scale = desired_player_radius * 2.0 / texture_width; // Assuming width is the dominant dimension
+
+        let scaled_width = texture_width * scale;
+        let scaled_height = texture_height * scale;
+
+        // Calculate the position to center the scaled image
+        let player_draw_x = PLAYER_X_POSITION - scaled_width / 2.0;
+        let player_draw_y = player_y_position - scaled_height; // Align bottom
+
+        draw_texture_ex(
+            &player_texture,
+            player_draw_x,
+            player_draw_y,
+            WHITE,
+            DrawTextureParams {
+                dest_size: Some(Vec2::new(scaled_width, scaled_height)),
+                ..Default::default()
+            },
+        );
 
         for obstacle in &obstacles {
             draw_rectangle(obstacle.rect.x, obstacle.rect.y, obstacle.rect.w, obstacle.rect.h, BROWN);
