@@ -7,6 +7,15 @@ enum ObstacleType {
     Object2,
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy)] // Added Copy trait
+enum ScoreType {
+    FirstValue = 1000,
+    SecondValue = 5000,
+    ThirdValue = 10000,
+    FourthValue = 20000,
+    FifthValue = 50000,
+}
+
 struct Obstacle {
     rect: Rect,
     kind: ObstacleType,
@@ -41,7 +50,7 @@ async fn main() {
 
     let mut obstacles: Vec<Obstacle> = vec![];
     let mut spawn_timer = 2.0;
-    let scroll_speed = 300.0;
+    let mut scroll_speed = 300.0;
 
     let mut game_state = GameState::Playing;
 
@@ -71,6 +80,27 @@ async fn main() {
                 if score_timer >= 0.1 {
                     score +=1;
                     score_timer = 0.0;
+                }
+
+                match score {
+                    x if x >= ScoreType::FifthValue as i32 => {
+                        scroll_speed = 800.0;
+                    }
+                    x if x >= ScoreType::FourthValue as i32 => {
+                        scroll_speed = 700.0;
+                    }
+                    x if x >= ScoreType::ThirdValue as i32 => {
+                        scroll_speed = 600.0;
+                    }
+                    x if x >= ScoreType::SecondValue as i32 => {
+                        scroll_speed = 500.0;
+                    }
+                    x if x >= ScoreType::FirstValue as i32 => {
+                        scroll_speed = 400.0;
+                    }
+                    _ => {
+                        scroll_speed = 300.0;
+                    }
                 }
 
                 if spawn_timer <= 0.0 {
@@ -116,6 +146,7 @@ async fn main() {
                     obstacles.clear();
                     spawn_timer = 2.0;
                     score = 0;
+                    scroll_speed = 300.0;
                     game_state = GameState::Playing;
                 }
             }
