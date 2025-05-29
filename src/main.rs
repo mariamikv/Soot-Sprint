@@ -26,22 +26,22 @@ async fn main() {
     let obstacle_object1_texture = load_texture("assets/object_1.png").await.unwrap();
     let obstacle_object2_texture = load_texture("assets/object_2.png").await.unwrap();
 
-    const FLOOR_Y_POSITION: f32 = 400.0;
+    const FLOOR_Y_POSITION: f32 = 350.0;
     const PLAYER_X_POSITION: f32 = 75.0;
     const GRAVITY: f32 = 1.0;
     const JUMP_FORCE: f32 = -25.0;
 
-    const OBSTACLE_WIDTH: f32 = 80.0;
-    const OBSTACLE_HEIGHT: f32 = 80.0;
+    const OBSTACLE_WIDTH: f32 = 60.0;
+    const OBSTACLE_HEIGHT: f32 = 60.0;
 
     let mut player_y_position = 100.0;
     let mut player_velocity_y = 0.0;
-    let player_radius = 20.0;
+    let player_radius = 40.0;
     let mut is_on_floor = false;
 
     let mut obstacles: Vec<Obstacle> = vec![];
     let mut spawn_timer = 2.0;
-    let scroll_speed = 200.0;
+    let scroll_speed = 300.0;
 
     let mut game_state = GameState::Playing;
 
