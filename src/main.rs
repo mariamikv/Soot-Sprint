@@ -45,6 +45,9 @@ async fn main() {
 
     let mut game_state = GameState::Playing;
 
+    let mut score = 0;
+    let mut score_timer = 0.0;
+
     loop {
         let delta_time = get_frame_time();
 
@@ -63,6 +66,12 @@ async fn main() {
                     is_on_floor = false;
                 }
                 spawn_timer -= delta_time;
+
+                score_timer += delta_time;
+                if score_timer >= 0.1 {
+                    score +=1;
+                    score_timer = 0.0;
+                }
 
                 if spawn_timer <= 0.0 {
                     spawn_timer = rand::gen_range(1.5, 3.0);
@@ -106,6 +115,7 @@ async fn main() {
                     player_velocity_y = 0.0;
                     obstacles.clear();
                     spawn_timer = 2.0;
+                    score = 0;
                     game_state = GameState::Playing;
                 }
             }
@@ -133,20 +143,18 @@ async fn main() {
         );
 
         draw_line(0.0, FLOOR_Y_POSITION, screen_width(), FLOOR_Y_POSITION, 5.0, BLACK);
-        // --- NEW: Use draw_texture_ex to scale the player image ---
-        let desired_player_radius = player_radius; // The size our circle was
-        let texture_width = player_texture.width() as f32;
-        let texture_height = player_texture.height() as f32;
 
-        // Calculate the scale needed to make the image roughly the size of the circle
-        let scale = desired_player_radius * 2.0 / texture_width; // Assuming width is the dominant dimension
+        let desired_player_radius = player_radius;
+        let texture_width = player_texture.width();
+        let texture_height = player_texture.height();
+
+        let scale = desired_player_radius * 2.0 / texture_width;
 
         let scaled_width = texture_width * scale;
         let scaled_height = texture_height * scale;
 
-        // Calculate the position to center the scaled image
         let player_draw_x = PLAYER_X_POSITION - scaled_width / 2.0;
-        let player_draw_y = player_y_position - scaled_height; // Align bottom
+        let player_draw_y = player_y_position - scaled_height;
 
         draw_texture_ex(
             &player_texture,
@@ -179,6 +187,18 @@ async fn main() {
         }
 
         draw_text("SOOT SPRINT", 20.0, 50.0, 50.0, DARKGRAY);
+
+        let score_text = format!("SCORE: {}", score);
+        let font_size = 30.0;
+        let text_color = BLACK;
+        let margin = 20.0;
+
+        let text_dimensions = measure_text(&score_text, None, font_size as u16, 1.0);
+
+        let text_x = screen_width() - text_dimensions.width - margin;
+        let text_y = margin + font_size;
+
+        draw_text(&score_text, text_x, text_y, font_size, text_color);
 
         if let GameState::GameOver = game_state {
             let text = "GAME OVER!";
