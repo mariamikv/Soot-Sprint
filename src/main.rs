@@ -29,7 +29,7 @@ enum GameState {
 #[macroquad::main("SootSprint")]
 async fn main() {
     let background_texture = load_texture("assets/background_mid.png").await.unwrap();
-    let player_texture = load_texture("assets/first_jump.png").await.unwrap();
+    let player_texture = load_texture("assets/player_0.png").await.unwrap();
 
     let obstacle_object0_texture = load_texture("assets/object_0.png").await.unwrap();
     let obstacle_object1_texture = load_texture("assets/object_1.png").await.unwrap();
@@ -40,8 +40,12 @@ async fn main() {
     const GRAVITY: f32 = 1.0;
     const JUMP_FORCE: f32 = -25.0;
 
-    const OBSTACLE_WIDTH: f32 = 60.0;
+    const OBSTACLE_WIDTH: f32 = 80.0;
     const OBSTACLE_HEIGHT: f32 = 60.0;
+
+    const OBJECT1_OWN_WIDTH: f32 = 70.0;
+    const OBJECT1_OWN_HEIGHT: f32 = 100.0;
+    const OBJECT1_ADDITIONAL_CLEARANCE_ABOVE_OTHERS: f32 = 30.0;
 
     let mut player_y_position = 100.0;
     let mut player_velocity_y = 0.0;
@@ -112,9 +116,14 @@ async fn main() {
                             rect: Rect::new(screen_width(), FLOOR_Y_POSITION - OBSTACLE_HEIGHT, OBSTACLE_WIDTH, OBSTACLE_HEIGHT),
                             kind: ObstacleType::Object0,
                         },
-                        1 => Obstacle {
-                            rect: Rect::new(screen_width(), FLOOR_Y_POSITION - OBSTACLE_HEIGHT, OBSTACLE_WIDTH, OBSTACLE_HEIGHT),
-                            kind: ObstacleType::Object1,
+                        1 => {
+
+                            let object1_bottom_edge_y = FLOOR_Y_POSITION - OBSTACLE_HEIGHT - OBJECT1_ADDITIONAL_CLEARANCE_ABOVE_OTHERS;
+                            let object1_rect_y = object1_bottom_edge_y - OBJECT1_OWN_HEIGHT;
+                            Obstacle {
+                                rect: Rect::new(screen_width(), object1_rect_y, OBJECT1_OWN_WIDTH, OBJECT1_OWN_HEIGHT),
+                                kind: ObstacleType::Object1,
+                            }
                         },
                         _ => Obstacle {
                             rect: Rect::new(screen_width(), FLOOR_Y_POSITION - OBSTACLE_HEIGHT, OBSTACLE_WIDTH, OBSTACLE_HEIGHT),
