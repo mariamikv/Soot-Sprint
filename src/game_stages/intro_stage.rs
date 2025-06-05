@@ -13,7 +13,10 @@ pub struct IntroStage {
 }
 
 impl IntroStage {
-    pub fn new(screen_width: f32, screen_height: f32) -> Self {
+    pub fn new(
+        screen_width: f32,
+        screen_height: f32,
+    ) -> Self {
         Self {
             slides: vec![
                 "Placeholder".to_string(),
@@ -21,9 +24,9 @@ impl IntroStage {
                  a tiny Soot Sprite flickers to life \n\
                  by a whisper of old magic.".to_string(),
                 "Now, a grand adventure awaits! \n\
-                Hop and dash through a forgotten world of giant wonders. \n\
-                How far can your tiny feet carry you?".to_string(),
-                "Ready to Start the Game?".to_string(),
+                 Hop and dash through a forgotten \n\
+                 world of giant wonders".to_string(),
+                "How far can your tiny feet carry you?".to_string(),
             ],
             current_slide_index: 0,
             slide_timer: 0.0,
@@ -46,8 +49,8 @@ impl GameStage for IntroStage {
         screen_width: f32,
         screen_height: f32,
     ) -> StageTransition {
-        self.start_button_rect.x = screen_width * 0.4;
-        self.start_button_rect.y = screen_height * 0.7;
+        self.start_button_rect.x = screen_width * 0.37;
+        self.start_button_rect.y = screen_height * 0.5;
         self.start_button_rect.w = config::intro::BUTTON_WIDTH;
         self.start_button_rect.h = config::intro::BUTTON_HEIGHT;
 
@@ -116,13 +119,20 @@ impl GameStage for IntroStage {
                 1.0,
             );
             let start_x = screen_width / 2.0 - text_dims.width / 2.0;
-            draw_text(
+            let text_params = TextParams {
+                font: Some(&_assets.bold_font),
+                font_size: font_size as u16,
+                color: BLACK,
+                ..TextParams::default()
+            };
+
+            draw_text_ex(
                 line_text,
                 start_x,
                 current_y,
-                font_size,
-                BLACK,
+                text_params,
             );
+
             current_y += line_spacing;
         }
 
@@ -142,12 +152,17 @@ impl GameStage for IntroStage {
                 button_font_size as u16,
                 1.0,
             );
-            draw_text(
+            let text_params = TextParams {
+                font: Some(&_assets.bold_font),
+                color:WHITE,
+                font_size: button_font_size as u16,
+                ..TextParams::default()
+            };
+            draw_text_ex(
                 button_text,
                 self.start_button_rect.x + (self.start_button_rect.w - button_text_dims.width) / 2.0,
                 self.start_button_rect.y + (self.start_button_rect.h - button_text_dims.height) / 2.0 + button_text_dims.offset_y,
-                button_font_size,
-                WHITE,
+                text_params,
             );
         }
     }

@@ -6,7 +6,7 @@ pub struct Assets {
     pub object0: Texture2D,
     pub object1: Texture2D,
     pub object2: Texture2D,
-    // add fonts, sounds
+    pub bold_font: Font,
 }
 
 impl Assets {
@@ -17,12 +17,16 @@ impl Assets {
         let object1 = load_texture("assets/object_1.png").await?;
         let object2 = load_texture("assets/object_2.png").await?;
 
-        Ok(Self {
-            background,
-            player,
-            object0,
-            object1,
-            object2,
-        })
+        let bold_font = load_ttf_font("raw/bold.ttf").await?;
+        Ok(
+            Self {
+                background,
+                player,
+                object0,
+                object1,
+                object2,
+                bold_font,
+            }
+        )
     }
 }

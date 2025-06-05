@@ -25,7 +25,7 @@ pub const SCROLL_SPEED_TIER5: f32 = 800.0;
 
 // UI and Intro
 pub mod intro {
-    pub const SLIDE_DURATION_S: f32 = 3.0;
+    pub const SLIDE_DURATION_S: f32 = 8.0;
     pub const BUTTON_WIDTH: f32 = 200.0;
     pub const BUTTON_HEIGHT: f32 = 50.0;
     pub const FONT_SIZE: f32 = 30.0;
