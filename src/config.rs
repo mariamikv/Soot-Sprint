@@ -1,6 +1,5 @@
 
 // General Gameplay
-pub const FLOOR_Y_POSITION: f32 = 350.0;
 pub const PLAYER_X_POSITION: f32 = 75.0;
 pub const GRAVITY: f32 = 1.0;
 pub const JUMP_FORCE: f32 = -25.0;
