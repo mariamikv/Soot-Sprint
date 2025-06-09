@@ -11,8 +11,8 @@ pub struct Assets {
 
 impl Assets {
     pub async fn load() -> Result<Self, macroquad::Error> {
-        let background = load_texture("assets/background_mid.png").await?;
-        let player = load_texture("assets/player_0.png").await?;
+        let background = load_texture("assets/background.png").await?;
+        let player = load_texture("assets/player.png").await?;
         let object0 = load_texture("assets/object_0.png").await?;
         let object1 = load_texture("assets/object_1.png").await?;
         let object2 = load_texture("assets/object_2.png").await?;

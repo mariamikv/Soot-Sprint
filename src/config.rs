@@ -1,8 +1,7 @@
 
 // General Gameplay
-pub const FLOOR_Y_POSITION: f32 = 350.0;
 pub const PLAYER_X_POSITION: f32 = 75.0;
-pub const GRAVITY: f32 = 1.0;
+pub const GRAVITY: f32 = 1.5;
 pub const JUMP_FORCE: f32 = -25.0;
 pub const PLAYER_RADIUS: f32 = 40.0;
 
@@ -35,7 +34,6 @@ pub mod intro {
 pub mod playing_ui {
     pub const SCORE_FONT_SIZE: f32 = 30.0;
     pub const SCORE_MARGIN: f32 = 20.0;
-    pub const TITLE_FONT_SIZE: f32 = 50.0;
 }
 
 pub mod game_over_ui {

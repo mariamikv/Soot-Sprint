@@ -14,10 +14,12 @@ pub struct PlayingStage {
     scroll_speed: f32,
     score: u32,
     score_timer: f32,
+    floor_y_position: f32,
 }
 
 impl PlayingStage {
     pub fn new(_screen_width: f32, _screen_height: f32) -> Self {
+        let floor_y_position = _screen_height * 0.65;
         Self {
             player_y_position: 100.0,
             player_velocity_y: 0.0,
@@ -27,6 +29,7 @@ impl PlayingStage {
             scroll_speed: config::SCROLL_SPEED_INITIAL,
             score: 0,
             score_timer: 0.0,
+            floor_y_position,
         }
     }
 }
@@ -45,8 +48,14 @@ impl GameStage for PlayingStage {
         self.player_velocity_y += config::GRAVITY;
         self.player_y_position += self.player_velocity_y;
 
-        if self.player_y_position >= config::FLOOR_Y_POSITION {
-            self.player_y_position = config::FLOOR_Y_POSITION;
+        let player_height = config::PLAYER_RADIUS * 2.0;
+        if self.player_y_position < player_height {
+            self.player_y_position = player_height;
+            self.player_velocity_y = 0.0;
+        }
+
+        if self.player_y_position >= self.floor_y_position {
+            self.player_y_position = self.floor_y_position;
             self.player_velocity_y = 0.0;
             self.is_on_floor = true;
         } else {
@@ -79,14 +88,14 @@ impl GameStage for PlayingStage {
                 0 => Obstacle {
                     rect: Rect::new(
                         screen_width,
-                        config::FLOOR_Y_POSITION - config::OBSTACLE_DEFAULT_HEIGHT,
+                        self.floor_y_position - config::OBSTACLE_DEFAULT_HEIGHT,
                         config::OBSTACLE_DEFAULT_WIDTH,
                         config::OBSTACLE_DEFAULT_HEIGHT,
                     ),
                     kind: ObstacleType::Object0,
                 },
                 1 => {
-                    let object1_rect_y = config::FLOOR_Y_POSITION - config::OBSTACLE_DEFAULT_HEIGHT
+                    let object1_rect_y = self.floor_y_position - config::OBSTACLE_DEFAULT_HEIGHT
                         - config::OBJECT1_ADDITIONAL_CLEARANCE_ABOVE_OTHERS - config::OBJECT1_OWN_HEIGHT;
                     Obstacle {
                         rect: Rect::new(
@@ -101,7 +110,7 @@ impl GameStage for PlayingStage {
                 _ => Obstacle {
                     rect: Rect::new(
                         screen_width,
-                        config::FLOOR_Y_POSITION - config::OBSTACLE_DEFAULT_HEIGHT,
+                        self.floor_y_position - config::OBSTACLE_DEFAULT_HEIGHT,
                         config::OBSTACLE_DEFAULT_WIDTH,
                         config::OBSTACLE_DEFAULT_HEIGHT,
                     ),
@@ -118,9 +127,9 @@ impl GameStage for PlayingStage {
 
         let player_collision_rect = Rect::new(
             config::PLAYER_X_POSITION - config::PLAYER_RADIUS,
-            self.player_y_position - config::PLAYER_RADIUS * 2.0,
+            self.player_y_position - player_height,
             config::PLAYER_RADIUS * 2.0,
-            config::PLAYER_RADIUS * 2.0,
+            player_height,
         );
 
         for obstacle in &self.obstacles {
@@ -150,7 +159,7 @@ impl GameStage for PlayingStage {
     ) {
         clear_background(WHITE);
 
-        let bg_scale = 0.25;
+        let bg_scale = 0.15;
         let bg_scaled_width = assets.background.width() * bg_scale;
         let bg_scaled_height = assets.background.height() * bg_scale;
         let bg_x_pos = (screen_width / 2.0) - (bg_scaled_width / 2.0);
@@ -173,10 +182,10 @@ impl GameStage for PlayingStage {
 
         draw_line(
             0.0,
-            config::FLOOR_Y_POSITION,
+            self.floor_y_position ,
             screen_width,
-            config::FLOOR_Y_POSITION,
-            5.0,
+            self.floor_y_position ,
+            3.0,
             BLACK,
         );
 
@@ -227,13 +236,20 @@ impl GameStage for PlayingStage {
             );
         }
 
-        draw_text(
+        let text_params = TextParams {
+            font: Some(&assets.bold_font),
+            font_size: 30.0 as u16,
+            color: BLACK,
+            ..TextParams::default()
+        };
+
+        draw_text_ex(
             "SOOT SPRINT",
             20.0,
             50.0,
-            config::playing_ui::TITLE_FONT_SIZE,
-            DARKGRAY,
+            text_params,
         );
+
         let score_text = std::format!("SCORE: {}", self.score);
         let text_dimensions = measure_text(
             &score_text,
@@ -243,12 +259,18 @@ impl GameStage for PlayingStage {
         );
         let text_x = screen_width - text_dimensions.width - config::playing_ui::SCORE_MARGIN;
         let text_y = config::playing_ui::SCORE_MARGIN + config::playing_ui::SCORE_FONT_SIZE;
-        draw_text(
+
+        let score_text_params = TextParams {
+            font: Some(&assets.bold_font),
+            font_size: 24.0 as u16,
+            color: BLACK,
+            ..TextParams::default()
+        };
+        draw_text_ex(
             &score_text,
             text_x,
             text_y,
-            config::playing_ui::SCORE_FONT_SIZE,
-            BLACK,
+            score_text_params,
         );
     }
 }

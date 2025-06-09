@@ -109,7 +109,11 @@ impl GameStage for IntroStage {
         } else {
             (lines.len() as f32 * line_spacing) - (line_spacing - font_size)
         };
-        let mut current_y = screen_height * 0.4 - total_text_block_height / 2.0;
+        let mut current_y = if self.current_slide_index == self.slides.len() - 1 {
+            screen_height * 0.4 - total_text_block_height / 2.0
+        } else {
+            screen_height * 0.5 - total_text_block_height / 2.0
+        };
 
         for line_text in lines {
             let text_dims = measure_text(
